@@ -1,0 +1,66 @@
+Metadata-Version: 2.4
+Name: empresas-certificadas-etl
+Version: 0.1.0
+Summary: ETL pipeline that consolidates certified tourism companies datasets
+Author: UACh Data Team
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=2.1
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4; extra == "dev"
+Requires-Dist: ruff>=0.1.14; extra == "dev"
+
+# Empresas Certificadas ETL
+
+Pipeline modular para normalizar los datasets entregados (regiones, tipos de alojamiento, clases de guías y unidades habitacionales) usando prácticas inspiradas en Clean Code y SOLID.
+
+## Estructura de carpetas
+```
+config/
+  settings.yaml
+config/
+data/
+  raw/
+  processed/
+docs/
+notebooks/
+scripts/
+  run_etl.py
+src/
+  funds_etl/
+    configuration.py
+    contracts.py
+    entities.py
+    extractors/
+    loaders/
+    transformers/
+    pipeline.py
+tests/
+```
+
+## Requisitos
+- Python 3.10+
+- `pip install -r requirements.txt`
+- Para desarrollo: `pip install .[dev]`
+
+## Ejecución del ETL
+1. Verifica que los CSV estén en `data/raw/` (ya movidos desde la raíz del proyecto).
+2. Ajusta `config/settings.yaml` si agregas nuevos datasets o cambias rutas.
+3. Ejecuta el script:
+
+```bash
+python scripts/run_etl.py --config config/settings.yaml
+```
+
+Esto generará:
+- CSV normalizado por dataset en `data/processed/<dataset>.csv`.
+- Archivo combinado `data/processed/tourism_metrics.csv`.
+- Manifiesto `data/processed/dataset_manifest.json`.
+
+## Pruebas y calidad
+- Ejecuta las pruebas: `pytest`
+- Lint opcional con Ruff: `ruff check src tests`
+
+## Diseño
+Consulta `docs/architecture.md` para detalles de componentes, contratos y flujo de datos. Añadir nuevos orígenes implica únicamente actualizar la configuración y, si es necesario, crear un transformer especializado siguiendo las interfaces existentes.

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Turismo Certificado · UACh CER</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="logos-container">
+            <img src="thumbnail_Logo observa.png" alt="Universidad Austral de Chile - Centro de Estudios Regionales" class="header-logo-left">
+            <img src="thumbnail_images.png" alt="Logo Región" class="header-logo">
+        </div>
+        <div class="header-content">
+            <h1 class="main-title" id="main-title">Panorama interactivo del turismo certificado</h1>
+            <p class="subtitle" id="subtitle">Indicadores UACh · Centro de Estudios Regionales</p>
+        </div>
+    </header>
+    
+    <!-- Navegación -->
+    <nav class="nav-container">
+        <div class="nav-links" id="nav-links">
+            <span class="nav-link active" data-target="participacion-alojamientos" role="button" tabindex="0">Participación por tipologías</span>
+            <span class="nav-link" data-target="distribucion-alojamientos" role="button" tabindex="0">Distribución de oferta</span>
+        </div>
+    </nav>
+    
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Sección de Bienvenida -->
+        <!-- Sección Participación -->
+    <section id="participacion-alojamientos" class="section active viz-section" aria-live="polite">
+            <h2 class="section-title">Participación de tipologías de alojamiento certificadas</h2>
+            <div class="chart-section">
+                <p class="viz-description">
+                    Visual interactiva en formato donut que resume la participación porcentual de las diez tipologías con más empresas certificadas.
+                    Usa el botón interno del gráfico para alternar entre modo claro y oscuro sin salir de esta plantilla.
+                </p>
+                <iframe
+                    class="viz-frame"
+                    src="participacion_alojamientos_donut.html"
+                    title="Participación de tipologías de alojamiento"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                ></iframe>
+            </div>
+        </section>
+
+        <!-- Sección Distribución -->
+    <section id="distribucion-alojamientos" class="section viz-section" aria-live="polite">
+            <h2 class="section-title">Distribución de alojamientos certificados por tipo</h2>
+            <div class="chart-section">
+                <p class="viz-description">
+                    Barra comparativa con los trece tipos de alojamiento que monitorea el ETL de Empresas Certificadas, incluyendo etiquetas de valor y modo oscuro integrado.
+                </p>
+                <iframe
+                    class="viz-frame"
+                    src="distribucion_alojamientos_highcharts.html"
+                    title="Distribución de alojamientos certificados"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                ></iframe>
+            </div>
+        </section>
+        
+        <!-- Secciones dinámicas se generarán aquí -->
+        <div id="dynamic-sections"></div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text" id="footer-text">
+            Desarrollado con Plantilla de Visualización<br>
+            Universidad Austral de Chile - Centro de Estudios Regionales
+        </p>
+        <img src="thumbnail_logo cer.png" alt="Universidad Austral de Chile - Centro de Estudios Regionales" class="footer-logo">
+    </footer>
+
+    <!-- Modal de configuración -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="color: #1B4F72; margin-bottom: 20px;">Configuración de la Plantilla</h2>
+            
+            <div class="config-section">
+                <h3>Información General</h3>
+                <label for="title-input">Título Principal:</label>
+                <input type="text" id="title-input" placeholder="Ej: Análisis de Ventas 2024">
+                
+                <label for="subtitle-input">Subtítulo:</label>
+                <input type="text" id="subtitle-input" placeholder="Ej: Reporte Trimestral de Resultados">
+                
+                <label for="footer-input">Texto del Footer:</label>
+                <textarea id="footer-input" placeholder="Ej: Análisis desarrollado por...&#10;Empresa - Departamento"></textarea>
+            </div>
+            
+            <div class="config-section">
+                <h3>Datos JSON</h3>
+                <label for="data-input">Datos (formato JSON):</label>
+                <textarea id="data-input" placeholder='Ejemplo:
+{
+  "charts": {
+    "ventas": {
+      "title": "Ventas por Mes",
+      "type": "bar",
+      "data": [{"mes": "Enero", "valor": 1000}, {"mes": "Febrero", "valor": 1200}]
+    },
+    "usuarios": {
+      "title": "Usuarios Activos",
+      "type": "line", 
+      "data": [{"fecha": "2024-01", "cantidad": 500}, {"fecha": "2024-02", "cantidad": 650}]
+    }
+  }
+}'></textarea>
+            </div>
+            
+            <div id="status-message"></div>
+            
+            <button class="btn" onclick="applyConfiguration()">Aplicar Configuración</button>
+            <button class="btn" onclick="loadExampleData()" style="background: #6c757d; margin-left: 10px;">Cargar Datos de Ejemplo</button>
+        </div>
+    </div>
+
+    <!-- Tooltip global -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="interactive.js"></script>
+</body>
+</html>

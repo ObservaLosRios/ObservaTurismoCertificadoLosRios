@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Participación porcentual de alojamientos certificados</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-color: #0f172a;
+        --muted-text: #475569;
+        --shadow: 0 14px 45px rgba(15, 23, 42, 0.08);
+      }
+
+      body.dark {
+        color-scheme: dark;
+        --bg-color: #020617;
+        --card-bg: #0f172a;
+        --text-color: #e2e8f0;
+        --muted-text: #94a3b8;
+        --shadow: 0 18px 50px rgba(2, 6, 23, 0.8);
+      }
+
+      body {
+        margin: 0;
+        padding: 1.25rem 0 1.5rem;
+        font-family: "Inter", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-color);
+        transition: background 0.4s ease, color 0.4s ease;
+      }
+
+      header {
+        max-width: 960px;
+        margin: 0 auto 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .header-text {
+        flex: 1;
+        min-width: 240px;
+      }
+
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 1.85rem;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted-text);
+        line-height: 1.55;
+      }
+
+      #chart-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem 1.5rem;
+        background: var(--card-bg);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        transition: background 0.4s ease, box-shadow 0.4s ease;
+        position: relative;
+      }
+
+      .chart-area {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      #container {
+        flex: 1 1 520px;
+        min-width: 320px;
+        height: 520px;
+      }
+
+      .custom-legend {
+        flex: 0 0 220px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        color: var(--text-color);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.92rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .legend-swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.15);
+      }
+
+      body.dark .legend-swatch {
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 0.75rem;
+        right: 1.25rem;
+        z-index: 5;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: var(--card-bg);
+        color: var(--text-color);
+        border-radius: 999px;
+        padding: 0.4rem 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        cursor: pointer;
+        font-size: 0.92rem;
+        box-shadow: var(--shadow);
+        transition: background 0.3s ease, transform 0.2s ease, color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+        transform: translateY(-1px);
+      }
+
+      .theme-toggle .icon {
+        font-size: 1.1rem;
+      }
+
+      .theme-toggle .moon {
+        display: none;
+      }
+
+      body.dark .theme-toggle .sun {
+        display: none;
+      }
+
+      body.dark .theme-toggle .moon {
+        display: inline-flex;
+      }
+    </style>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+  </head>
+  <body class="light">
+    <header>
+      <div class="header-text">
+        <h1>Participación de las principales tipologías de alojamiento</h1>
+        <p>
+          Muestra el peso porcentual de las 10 tipologías con mayor número de empresas certificadas
+          dentro del portafolio monitorizado por UACh CER.
+        </p>
+      </div>
+    </header>
+    <div id="chart-wrapper">
+      <button id="themeToggle" class="theme-toggle" aria-label="Cambiar a modo oscuro">
+        <span class="icon sun" aria-hidden="true">☀️</span>
+        <span class="icon moon" aria-hidden="true">🌙</span>
+      </button>
+      <div class="chart-area">
+        <div id="container"></div>
+        <div class="custom-legend" id="legend" aria-label="Simbología de tipologías"></div>
+      </div>
+    </div>
+    <script>
+      const categories = [
+        "Cabañas",
+        "Hostal",
+        "Hotel",
+        "Cama y desayuno / alojamiento familiar",
+        "Departamentos Turísticos y/o Ejecutivos",
+        "Residencial",
+        "Albergue / refugio",
+        "Apartotel",
+        "Centro de turismo de naturaleza o ecoalbergue",
+        "Hostería"
+      ];
+
+      const values = [2680, 1853, 1574, 722, 629, 510, 305, 281, 235, 193];
+
+      const shares = [
+        0.2665,
+        0.1843,
+        0.1565,
+        0.0718,
+        0.0626,
+        0.0507,
+        0.0303,
+        0.0279,
+        0.0234,
+        0.0192
+      ];
+
+      const seriesData = categories.map((name, idx) => ({
+        name,
+        y: values[idx],
+        colorValue: shares[idx]
+      }));
+
+  const legendElement = document.getElementById('legend');
+
+  const pieThemes = {
+        light: {
+          bg: 'rgba(255,255,255,0)',
+          text: '#0f172a',
+          muted: '#475569',
+          tooltipBg: '#ffffff',
+          tooltipText: '#0f172a',
+          labelColor: '#0f172a',
+          palette: [
+            '#2563eb',
+            '#0ea5e9',
+            '#22d3ee',
+            '#14b8a6',
+            '#a855f7',
+            '#f97316',
+            '#facc15',
+            '#fb7185',
+            '#4ade80',
+            '#94a3b8'
+          ]
+        },
+        dark: {
+          bg: 'rgba(15,23,42,0.85)',
+          text: '#e2e8f0',
+          muted: '#94a3b8',
+          tooltipBg: '#0f172a',
+          tooltipText: '#f8fafc',
+          labelColor: '#ffffff',
+          palette: [
+            '#60a5fa',
+            '#38bdf8',
+            '#5eead4',
+            '#34d399',
+            '#c084fc',
+            '#fb923c',
+            '#fde047',
+            '#f87171',
+            '#4ade80',
+            '#cbd5f5'
+          ]
+        }
+      };
+
+      let currentTheme = 'light';
+      let chartInstance = null;
+
+      const renderLegend = (theme) => {
+        if (!legendElement) return;
+        const fragment = document.createDocumentFragment();
+        categories.forEach((name, idx) => {
+          const item = document.createElement('div');
+          item.className = 'legend-item';
+
+          const swatch = document.createElement('span');
+          swatch.className = 'legend-swatch';
+          swatch.style.backgroundColor = theme.palette[idx % theme.palette.length];
+
+          const label = document.createElement('span');
+          label.textContent = name;
+
+          item.appendChild(swatch);
+          item.appendChild(label);
+          fragment.appendChild(item);
+        });
+
+        legendElement.innerHTML = '';
+        legendElement.appendChild(fragment);
+      };
+
+      const buildPieOptions = (theme) => ({
+        chart: {
+          type: 'pie',
+          backgroundColor: theme.bg,
+          style: {
+            fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif'
+          }
+        },
+        title: {
+          text: 'Participación de las principales tipologías de alojamiento',
+          style: { color: theme.text }
+        },
+        subtitle: {
+          text: 'Fuente: ETL Empresas Certificadas',
+          style: { color: theme.muted }
+        },
+        tooltip: {
+          backgroundColor: theme.tooltipBg,
+          style: { color: theme.tooltipText },
+          borderRadius: 10,
+          formatter: function () {
+            const pct = (this.point.percentage || 0).toFixed(1);
+            return `<strong>${this.point.name}</strong><br/>Empresas certificadas: ${
+              Highcharts.numberFormat(this.y, 0, ',', '.')
+            }<br/>Participación: ${pct}%`;
+          }
+        },
+        plotOptions: {
+          pie: {
+            innerSize: '45%',
+            borderWidth: 0,
+            colors: theme.palette,
+            allowPointSelect: true,
+            dataLabels: {
+              enabled: false
+            }
+          }
+        },
+        series: [
+          {
+            name: 'Empresas certificadas',
+            data: seriesData.map((item, idx) => ({
+              ...item,
+              color: theme.palette[idx % theme.palette.length]
+            }))
+          }
+        ],
+        credits: {
+          text: 'UACh CER · Equipo de Ciencia de Datos',
+          href: null,
+          style: { color: theme.muted }
+        }
+      });
+
+      const renderPieChart = () => {
+        const theme = pieThemes[currentTheme];
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
+        chartInstance = Highcharts.chart('container', buildPieOptions(theme));
+        renderLegend(theme);
+      };
+
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', () => {
+        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+        const isDark = currentTheme === 'dark';
+        document.body.classList.toggle('dark', isDark);
+        document.body.classList.toggle('light', !isDark);
+        themeToggle.setAttribute(
+          'aria-label',
+          isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'
+        );
+        renderPieChart();
+      });
+
+      renderPieChart();
+    </script>
+  </body>
+</html>

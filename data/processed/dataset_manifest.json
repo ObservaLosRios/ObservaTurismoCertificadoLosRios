@@ -1,0 +1,29 @@
+{
+  "generated_at": "2025-11-16T00:03:04.410027+00:00",
+  "artifacts": [
+    {
+      "dataset_name": "regiones_empresas",
+      "path": "processed/regiones_empresas.csv",
+      "row_count": 1
+    },
+    {
+      "dataset_name": "suma_unidades_habitacionales",
+      "path": "processed/suma_unidades_habitacionales.csv",
+      "row_count": 1
+    },
+    {
+      "dataset_name": "tipos_alojamientos_empresas",
+      "path": "processed/tipos_alojamientos_empresas.csv",
+      "row_count": 13
+    },
+    {
+      "dataset_name": "tipos_clase_guias",
+      "path": "processed/tipos_clase_guias.csv",
+      "row_count": 3
+    }
+  ],
+  "metadata": {
+    "project": "Empresas Certificadas ETL",
+    "owner": "UACh Data Team"
+  }
+}

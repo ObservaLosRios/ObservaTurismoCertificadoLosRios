@@ -1,0 +1,42 @@
+project:
+  name: "Empresas Certificadas ETL"
+  owner: "UACh Data Team"
+paths:
+  raw_data_dir: "../data/raw"
+  processed_data_dir: "../data/processed"
+datasets:
+  regiones_empresas:
+    filename: "regiones_empresas.csv"
+    metric_group: "Regiones"
+    category_field: "region"
+    value_field: "recuento_rut_empresa"
+    percentage_field: null
+    highlight_field: null
+    highlight_percentage_field: null
+  suma_unidades_habitacionales:
+    filename: "suma_unidades_habitacionales.csv"
+    metric_group: "Unidades Habitacionales"
+    category_field: "categoria_unidad"
+    value_field: "suma_unidades"
+    percentage_field: "porcentaje_unidades"
+    highlight_field: "resaltado_unidades"
+    highlight_percentage_field: "porcentaje_resaltado"
+  tipos_alojamientos_empresas:
+    filename: "tipos_alojamientos_empresas.csv"
+    metric_group: "Tipos de Alojamientos"
+    category_field: "clase"
+    value_field: "recuento_rut_empresa"
+    percentage_field: "porcentaje_empresas"
+    highlight_field: "resaltado"
+    highlight_percentage_field: "porcentaje_resaltado"
+  tipos_clase_guias:
+    filename: "tipos_clase_guias.csv"
+    metric_group: "Tipos de Clase Guías"
+    category_field: "clase"
+    value_field: "recuento_rut_empresa"
+    percentage_field: "porcentaje_empresas"
+    highlight_field: "resaltado"
+    highlight_percentage_field: "porcentaje_resaltado"
+outputs:
+  unified_metrics_filename: "tourism_metrics.csv"
+  dataset_manifest_filename: "dataset_manifest.json"
