@@ -14,15 +14,6 @@
         --shadow: 0 14px 45px rgba(15, 23, 42, 0.08);
       }
 
-      body.dark {
-        color-scheme: dark;
-        --bg-color: #020617;
-        --card-bg: #0f172a;
-        --text-color: #e2e8f0;
-        --muted-text: #94a3b8;
-        --shadow: 0 18px 50px rgba(2, 6, 23, 0.8);
-      }
-
       body {
         margin: 0;
         padding: 1.25rem 0 1.5rem;
@@ -30,32 +21,6 @@
         background: var(--bg-color);
         color: var(--text-color);
         transition: background 0.4s ease, color 0.4s ease;
-      }
-
-      header {
-        max-width: 960px;
-        margin: 0 auto 0.75rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: flex-start;
-      }
-
-      .header-text {
-        flex: 1;
-        min-width: 240px;
-      }
-
-      h1 {
-        margin: 0 0 0.4rem;
-        font-size: 1.85rem;
-        color: var(--text-color);
-      }
-
-      p {
-        margin: 0;
-        color: var(--muted-text);
-        line-height: 1.55;
       }
 
       #chart-wrapper {
@@ -106,66 +71,14 @@
         box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.15);
       }
 
-      body.dark .legend-swatch {
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-      }
-
-      .theme-toggle {
-        position: absolute;
-        top: 0.75rem;
-        right: 1.25rem;
-        z-index: 5;
-        border: 1px solid rgba(148, 163, 184, 0.35);
-        background: var(--card-bg);
-        color: var(--text-color);
-        border-radius: 999px;
-        padding: 0.4rem 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        cursor: pointer;
-        font-size: 0.92rem;
-        box-shadow: var(--shadow);
-        transition: background 0.3s ease, transform 0.2s ease, color 0.3s ease;
-      }
-
-      .theme-toggle:hover {
-        transform: translateY(-1px);
-      }
-
-      .theme-toggle .icon {
-        font-size: 1.1rem;
-      }
-
-      .theme-toggle .moon {
-        display: none;
-      }
-
-      body.dark .theme-toggle .sun {
-        display: none;
-      }
-
-      body.dark .theme-toggle .moon {
-        display: inline-flex;
-      }
+      /* Legend colors already match chart palette so no dark mode overrides needed */
     </style>
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
   </head>
-  <body class="light">
-    <header>
-      <div class="header-text">
-        <h1>Participación de las principales tipologías de alojamiento</h1>
-        <p>
-          Muestra el peso porcentual de las 10 tipologías con mayor número de empresas certificadas
-          dentro del portafolio monitorizado por UACh CER.
-        </p>
-      </div>
-    </header>
+  <body>
     <div id="chart-wrapper">
-      <button id="themeToggle" class="theme-toggle" aria-label="Cambiar a modo oscuro">
-        <span class="icon sun" aria-hidden="true">☀️</span>
-        <span class="icon moon" aria-hidden="true">🌙</span>
-      </button>
       <div class="chart-area">
         <div id="container"></div>
         <div class="custom-legend" id="legend" aria-label="Simbología de tipologías"></div>
@@ -206,52 +119,40 @@
         colorValue: shares[idx]
       }));
 
-  const legendElement = document.getElementById('legend');
+      const legendElement = document.getElementById('legend');
 
-  const pieThemes = {
-        light: {
-          bg: 'rgba(255,255,255,0)',
-          text: '#0f172a',
-          muted: '#475569',
-          tooltipBg: '#ffffff',
-          tooltipText: '#0f172a',
-          labelColor: '#0f172a',
-          palette: [
-            '#2563eb',
-            '#0ea5e9',
-            '#22d3ee',
-            '#14b8a6',
-            '#a855f7',
-            '#f97316',
-            '#facc15',
-            '#fb7185',
-            '#4ade80',
-            '#94a3b8'
-          ]
-        },
-        dark: {
-          bg: 'rgba(15,23,42,0.85)',
-          text: '#e2e8f0',
-          muted: '#94a3b8',
-          tooltipBg: '#0f172a',
-          tooltipText: '#f8fafc',
-          labelColor: '#ffffff',
-          palette: [
-            '#60a5fa',
-            '#38bdf8',
-            '#5eead4',
-            '#34d399',
-            '#c084fc',
-            '#fb923c',
-            '#fde047',
-            '#f87171',
-            '#4ade80',
-            '#cbd5f5'
-          ]
-        }
+      const chartTheme = {
+        bg: 'rgba(255,255,255,0)',
+        text: '#0f172a',
+        muted: '#475569',
+        tooltipBg: '#ffffff',
+        tooltipText: '#0f172a',
+        labelColor: '#0f172a',
+        palette: [
+          '#2563eb',
+          '#0ea5e9',
+          '#22d3ee',
+          '#14b8a6',
+          '#a855f7',
+          '#f97316',
+          '#facc15',
+          '#fb7185',
+          '#4ade80',
+          '#94a3b8'
+        ]
       };
 
-      let currentTheme = 'light';
+      const positionExportButton = (chart) => {
+        if (!chart || !chart.exportSVGElements || !chart.exportSVGElements[0]) {
+          return;
+        }
+        const button = chart.exportSVGElements[0];
+        const bbox = button.getBBox();
+        const targetX = chart.chartWidth - bbox.width - 12;
+        const targetY = 8;
+        button.translate(targetX - button.x, targetY - button.y);
+      };
+
       let chartInstance = null;
 
       const renderLegend = (theme) => {
@@ -281,18 +182,21 @@
         chart: {
           type: 'pie',
           backgroundColor: theme.bg,
+          spacingRight: 30,
           style: {
             fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif'
+          },
+          events: {
+            load: function () {
+              positionExportButton(this);
+            },
+            render: function () {
+              positionExportButton(this);
+            }
           }
         },
-        title: {
-          text: 'Participación de las principales tipologías de alojamiento',
-          style: { color: theme.text }
-        },
-        subtitle: {
-          text: 'Fuente: ETL Empresas Certificadas',
-          style: { color: theme.muted }
-        },
+        title: { text: null },
+        subtitle: { text: null },
         tooltip: {
           backgroundColor: theme.tooltipBg,
           style: { color: theme.tooltipText },
@@ -328,30 +232,31 @@
           text: 'UACh CER · Equipo de Ciencia de Datos',
           href: null,
           style: { color: theme.muted }
+        },
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              symbolStroke: '#475569',
+              align: 'right',
+              verticalAlign: 'top',
+              x: -10,
+              y: 0
+            }
+          }
+        },
+        exportData: {
+          tableCaption: 'Datos exportados'
         }
       });
 
       const renderPieChart = () => {
-        const theme = pieThemes[currentTheme];
         if (chartInstance) {
           chartInstance.destroy();
         }
-        chartInstance = Highcharts.chart('container', buildPieOptions(theme));
-        renderLegend(theme);
+        chartInstance = Highcharts.chart('container', buildPieOptions(chartTheme));
+        renderLegend(chartTheme);
       };
-
-      const themeToggle = document.getElementById('themeToggle');
-      themeToggle.addEventListener('click', () => {
-        currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-        const isDark = currentTheme === 'dark';
-        document.body.classList.toggle('dark', isDark);
-        document.body.classList.toggle('light', !isDark);
-        themeToggle.setAttribute(
-          'aria-label',
-          isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'
-        );
-        renderPieChart();
-      });
 
       renderPieChart();
     </script>
